@@ -1,11 +1,33 @@
 <!DOCTYPE html>
 <html lang="sv">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MinVikt.se - Medicinsk viktkontroll för Alla</title>
-    <style>
-        body {
+    <!DOCTYPE html>
+    <html lang="sv">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Viktkontroll med medicin</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+        <style>
+            body {
+                
+            background-color: #b0d8f0;
+                font-family: Arial, sans-serif;
+            }
+            .hero {
+                text-align: left;
+                padding: 50px;
+            }
+            .section {
+                padding: 40px;
+                text-align: left;
+            }
+            .image {
+                width: 100%;
+                height: auto;
+            }
+            body {
             font-family: Arial, sans-serif;
             line-height: 1.6;
             margin: 0;
@@ -72,43 +94,87 @@
             background-color: #f1f1f1;
             margin-top: 2rem;
         }
-    </style>
-</head>
+        </style>
+    </head>
 <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="#">MinVikt</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#about">Om oss</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#benefits">Fördelar</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#faq">Vanliga frågor</a></li>
+                    <li class="nav-item"><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#loginModal">Logga in</button></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
     <header>
-        <h1>MinVikt.se - Medicinsk viktkontroll för alla</h1>
+        <h1>MinVikt -Viktkontroll med medicin på dina villkor</h1>
     </header>
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="loginModalLabel">Logga in</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" id="email" class="form-control mb-2" placeholder="E-post">
+                    <input type="password" id="password" class="form-control mb-2" placeholder="Lösenord">
+                    <button class="btn btn-primary w-100" id="login-btn">Logga in</button>
+                    <p class="error-message text-danger text-center mt-2" id="error-message"></p>
+                </div>
+            </div>
+        </div>
+    </div>
     <main>
         <div class="section">
-            <h2>Vi behandlar dig</h2>
-            <p>Vi behandlar dig som på grund av övervikt upplever ett nedsatt välbefinnande. Hos oss behöver du inte ha "fetma" för att få medicinsk behandling, till skillnad från andra digitala kliniker.</p>
+          
+           <h2>Vi behandlar dig som på grund av övervikt upplever nedsatt livkvalitet.</h2>
         </div>
 
         <div class="section">
-            <h2>Varför välja minvikt.se?</h2>
-            <h3 class="highlight">Ingen provtagning krävs</h3>
-            <p>Du behöver inte genomgå några provtagningar för att starta din behandling hos oss.</p>
+            <h2>Varför välja MinVikt?</h2>
+            <h3 class="highlight">Ingen provtagning</h3>
             <h3 class="highlight">Inga integritetskränkande bilder</h3>
-            <p>Vi kräver aldrig att du ska skicka in bilder som kan upplevas som kränkande.</p>
+            <h3 class="highlight">Lägst pris – inga dietister eller tränare.</h3>
+        
         </div>
 
         <div class="section">
-            <h2>Andra fördelar</h2>
+            <h2>Fördelar med MinVikt</h2>
             <ul>
+                <li>Egen behanlingsanvarig lägare.</li>
+                <li>Psykologstöd vid sviktande motivation.</li>
                 <li>Enkel handläggning och uppföljning.</li>
                 <li>Följ dina framsteg direkt i appen med viktkurvor.</li>
                 <li>Du binder dig endast tre månader åt gången.</li>
                 <li>Smidig betalning via Swish, månadsvis.</li>
-                <li>Lägst pris – inga dietister eller tränare.</li>
                 <li>Möjlighet till hemleverans av medicin.</li>
             </ul>
         </div>
 
         <div class="section">
-            <h2>Användarvillkor</h2>
-            <p>Jag lämnar härmed mitt samtycke till att minvikt.se får ta del av min medicinlista.</p>
-            <a href="#" class="button">Logga in med BankID</a>
-            <a href="#" class="button">Logga in med annan enhet</a>
+
+            <h2>Är denna behandling rätt för mig?</h2>
+            <p></p>Har du provat alla olika dieter och viktmiskningstips?</p>
+            <p></p>Då kan detta vara din möjlighet att gå ner i vikt.</p>
+            
+            <p>Medicinsk viktbehandling är vetenskapligt bevisad och ger en genomsnittlig viktnedgång på upp till 26%</p>
+            <p></p>Många lever idag med övervikt, ofta på grund av att moderna livsmedel är rika på kolhydrater och innehåller olika tillsatser. Övervikt påverkar inte bara det allmänna välbefinnandet utan kan också leda till följdsjukdomar som påverkar både kropp och hälsa.</p>
+
+
+            <p>Svara på några frågor för bedöma om du är lämplig för medicinsk viktnedgång</p>
+
+            <h2>Frågor</h2>
+            
+            <a href="#" class="button">Tryck för att svara</a>
+          
         </div>
 
         <div class="section">
@@ -118,21 +184,127 @@
 
         <div class="section">
             <h2>Vanliga frågor</h2>
-            <h3>Varför ingen provtagning eller bilder?</h3>
-            <p>Det är onödigt med provtagning eftersom det inte fyller någon funktion i detta sammanhang vid behandling med GLP-1-medicin. Många kliniker begär bilder, men vi anser att detta kan upplevas som integritetskränkande. På minvikt.se slipper du visa upp dig halvnaken. Dessutom sparas dessa bilder i journalen och kan inte raderas utan Socialstyrelsens godkännande, även om du avslutar ditt abonnemang.</p>
+            <h3>Varför ingen provtagning eller bilder? Blir det patientsäkert ändå?</h3>
+            <p>Det är onödigt med provtagning eftersom det inte fyller någon funktion i detta sammanhang vid behandling med GLP-1-medicin. Många kliniker begär bilder, men vi och många andra anser att detta kan upplevas som integritetskränkande. Dessutom sparas dessa bilder i journalen och kan inte raderas utan Socialstyrelsens godkännande, även om du avslutar ditt abonnemang.</p>
 
-            <h3>Hur avgör vi om du är lämplig för behandling?</h3>
+            <h3>Hur avgör vi om du är lämplig för behandling? </h3>
             <p>Vi granskar ditt hälsotillstånd, inklusive din aktuella medicinering. Om läkaren bedömer att en behandling är olämplig i kombination med din nuvarande medicinering får du besked om detta. Du kommer också att få svara på en rad hälsorelaterade frågor som hjälper oss att skräddarsy din behandling.</p>
 
             <h3>Varför har vi inga dietister eller personliga tränare?</h3>
             <p>De som klarar av dieter och träning hanterar ofta detta på egen hand. Många tycker dock att det är svårt att hinna med i vardagen. De råd som vissa kliniker ger om kost och träning skapas ofta av AI-verktyg som ChatGPT – och kan därför enkelt nås utan extra kostnad.</p>
 
             <h3>Hur får jag koll på min motivation?</h3>
-            <p>I vår app har du tillgång till personliga sidor med tabeller och grafer som visar din viktutveckling. Du kan enkelt rapportera in vikt och mått. Om vi ser avvikelser från den förväntade viktnedgången kontaktar vi dig för att hjälpa dig vidare.</p>
+            <p>I vår app har du tillgång till personliga sidor med tabeller och grafer som visar din viktutveckling. Du kan enkelt rapportera in vikt och mått. Om vi ser avvikelser från den förväntade viktnedgången kontaktar vi dig för att hjälpa dig vidare. Vi kan också erbjuda psykologstöd vid bristande motivation</p>
         </div>
     </main>
     <footer>
-        <p>&copy; 2025 MinVikt.se </p>
+        <p>&copy; 2025 MinVikt.se-GLPX AB </p>
     </footer>
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="loginModalLabel">Logga in</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" id="email" class="form-control mb-2" placeholder="E-post">
+                    <input type="password" id="password" class="form-control mb-2" placeholder="Lösenord">
+                    <button class="btn btn-primary w-100" id="login-btn">Logga in</button>
+                    <p class="error-message text-danger text-center mt-2" id="error-message"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="module">
+
+
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+        const supabaseUrl = 'https://mbiwetscqjmskrwfrscr.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1iaXdldHNjcWptc2tyd2Zyc2NyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY1NDc4MTgsImV4cCI6MjA1MjEyMzgxOH0.cwgzarR9fwEo9kazw3yUAC8gDqlW2E_3v9wE8Ljr-rU';
+        const supabase = createClient(supabaseUrl, supabaseKey);
+        
+        document.addEventListener("DOMContentLoaded", async () => {
+    const loginModal = document.getElementById("login-modal");
+    const alreadyLoggedIn = document.getElementById("already-logged-in");
+
+    // Kolla om session finns
+    const { data: session } = await supabase.auth.getSession();
+    
+    if (session?.session) {
+        console.log("Användare är redan inloggad.");
+        loginModal.style.display = "none";  // Dölj loginmodulen
+        alreadyLoggedIn.style.display = "block";  // Visa "Du är redan inloggad"
+    } else {
+        console.log("Ingen aktiv session, visa inloggningsmodulen.");
+        loginModal.style.display = "block";  // Visa loginmodulen
+        alreadyLoggedIn.style.display = "none";  // Dölj alternativet att gå vidare
+    }
+});
+
+
+    if (storedSession) {
+        console.log("Återställer användarsession...");
+        await supabase.auth.setSession(storedSession);
+        
+        // Kontrollera om sessionen fortfarande är giltig
+        const { data: session } = await supabase.auth.getSession();
+        if (session?.session) {
+            console.log("Användare är redan inloggad.");
+            document.getElementById("login-modal").style.display = "none";
+            document.getElementById("already-logged-in").style.display = "block";
+            return;
+        }
+    }
+
+    console.log("Ingen aktiv session, visar inloggningsmodulen.");
+    document.getElementById("login-modal").style.display = "block";
+});
+
+        // Kontrollera om användaren redan är inloggad
+        const { data: session } = await supabase.auth.getSession();
+        if (session?.session) {
+            console.log("Användare är redan inloggad.");
+            window.location.href = "dashboard.html";  // Skicka till patientens dashboard
+        }
+    
+        document.getElementById("login-btn").addEventListener("click", async function () {
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+            const errorMessage = document.getElementById("error-message");
+    
+            errorMessage.textContent = "";
+    
+            if (!email || !password) {
+                errorMessage.textContent = "Fyll i både e-post och lösenord.";
+                return;
+            }
+    
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email,
+                password
+            });
+    
+            if (error) {
+                errorMessage.textContent = `Inloggning misslyckades: ${error.message}`;
+            } else {
+                console.log("Inloggning lyckades:", data);
+                localStorage.setItem("supabase_session", JSON.stringify(data.session));
+                window.location.href = "dashboard.html";  // Omdirigera patienten efter inloggning
+            }
+        });
+    
+        // Lyssna på autentiseringsförändringar för att uppdatera sessionen
+        supabase.auth.onAuthStateChange((event, session) => {
+            if (session) {
+                localStorage.setItem("supabase_session", JSON.stringify(session));
+            } else {
+                localStorage.removeItem("supabase_session");
+            }
+        });
+    
+    
+    </script>
 </body>
 </html>
