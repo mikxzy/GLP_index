@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+</head>
+<body>
+    <h1>Välkommen, <span id="user-name"></span></h1>
+    <p>Du är nu inloggad.</p>
+    <button onclick="logout()">Logga ut</button>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+        const supabaseUrl = 'https://mbiwetscqjmskrwfrscr.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1iaXdldHNjcWptc2tyd2Zyc2NyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY1NDc4MTgsImV4cCI6MjA1MjEyMzgxOH0.cwgzarR9fwEo9kazw3yUAC8gDqlW2E_3v9wE8Ljr-rU';
+        const supabase = createClient(supabaseUrl, supabaseKey);
+
+        async function checkSession() {
+            const { data: { session } } = await supabase.auth.getSession();
+
+            if (!session) {
+                window.location.href = "index_uuid_kort.html"; // Skicka tillbaka till inloggning om ingen session finns
+                return;
+            }
+
+            // Hämta användarens information från databasen
+            const { data, error } = await supabase
+                .from('users')
+                .select('first_name, last_name')
+                .eq('user_id', session.user.id)
+                .single();
+
+            if (error) {
+                console.error("Kunde inte hämta användarinformation:", error);
+                return;
+            }
+
+            document.getElementById('user-name').textContent = `${data.first_name} ${data.last_name}`;
+        }
+
+        async function logout() {
+            const { error } = await supabase.auth.signOut();
+            if (error) {
+                console.error("Fel vid utloggning:", error);
+            } else {
+                localStorage.removeItem('supabase.auth.token'); // Rensa eventuell cache
+                window.location.href = "index_uuid_kort.html"; // Skicka tillbaka till inloggningssidan
+            }
+        }
+
+        // Gör logout-funktionen tillgänglig för knappen
+        window.logout = logout;
+
+        checkSession();
+    </script>
+</body>
+</html>
