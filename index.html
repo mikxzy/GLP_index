@@ -137,62 +137,6 @@
             </div>
         </div>
     </div>
-    <script type="module">
-
-
-        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-
-        const supabaseUrl = 'https://mbiwetscqjmskrwfrscr.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1iaXdldHNjcWptc2tyd2Zyc2NyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY1NDc4MTgsImV4cCI6MjA1MjEyMzgxOH0.cwgzarR9fwEo9kazw3yUAC8gDqlW2E_3v9wE8Ljr-rU';
-        const supabase = createClient(supabaseUrl, supabaseKey);
-        
-        document.addEventListener("DOMContentLoaded", async () => {
-    const { data: session } = await supabase.auth.getSession();
     
-    if (session?.session) {
-        console.log("Användare är redan inloggad.");
-        window.location.href = "dashboard_uuid.html";  // Se till att rätt dashboard existerar!
-    }
-});
-
-document.getElementById("login-btn").addEventListener("click", async function () {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-    const errorMessage = document.getElementById("error-message");
-
-    errorMessage.textContent = "";
-
-    if (!email || !password) {
-        errorMessage.textContent = "Fyll i både e-post och lösenord.";
-        return;
-    }
-
-    const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-    });
-
-    if (error) {
-        errorMessage.textContent = `Inloggning misslyckades: ${error.message}`;
-        return;
-    } 
-
-    console.log("Inloggning lyckades:", data);
-    localStorage.setItem("supabase_session", JSON.stringify(data.session));
-    window.location.href = "dashboard_uuid.html";  // Se till att sidan finns!
-});
-
-    
-        // Lyssna på autentiseringsförändringar för att uppdatera sessionen
-        supabase.auth.onAuthStateChange((event, session) => {
-            if (session) {
-                localStorage.setItem("supabase_session", JSON.stringify(session));
-            } else {
-                localStorage.removeItem("supabase_session");
-            }
-        });
-    
-    
-    </script>
 </body>
 </html>
