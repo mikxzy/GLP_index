@@ -1,0 +1,304 @@
+
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <title>Digitspan Test</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 40px;
+      padding-bottom: 60px;
+    }
+    svg {
+      border: 1px solid black;
+      margin-bottom: 20px;
+    }
+    #log-output {
+      white-space: pre;
+      text-align: left;
+      margin: 40px auto;
+      width: 80%;
+      max-width: 800px;
+      background: #f0f0f0;
+      padding: 15px;
+      border-radius: 8px;
+      display: none;
+    }
+    #input-field {
+      font-size: 24px;
+      width: 300px;
+      padding: 10px;
+      margin-top: 20px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Digitspan Test</h2>
+  <p id="phase-indicator" class="text-info fw-bold mb-1"></p>
+  <p id="difficulty-label" class="mb-4">Svårighetsnivå: <span id="difficulty-text">3</span></p>
+
+  <div id="id-form" class="mb-4">
+    <input id="test-label" class="form-control mb-2 w-25 mx-auto" type="text" placeholder="Testetikett (t.ex. 'Övning 1')" />
+    <input id="tester-code" class="form-control mb-2 w-25 mx-auto" type="text" placeholder="ID-kod (t.ex. 'AA1234')" />
+  </div>
+
+  <svg width="500" height="200"></svg>
+
+  <div class="text-center">
+    <button id="start-btn" class="btn btn-primary btn-lg mb-3">Starta Test</button>
+  </div>
+  
+  <div id="response-container"></div>
+  <div id="log-output"></div>
+  <button id="save-btn" class="btn btn-success mt-3" style="display:none;">Spara resultat som fil</button>
+  <div class="text-center">
+    <button id="restart-btn" class="btn btn-danger mt-3" style="display:none;">Starta om</button>
+  </div>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+    const supabase = createClient(
+      "https://uwlowpscecrgqwnpnwqr.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV3bG93cHNjZWNyZ3F3bnBud3FyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA3NzU3MTIsImV4cCI6MjA1NjM1MTcxMn0.OIH_NlcesgdFN78koNNUEtJap9qlwkJxmwhu4UUovNk"
+    );
+
+    window.supabase = supabase;
+
+    const svg = d3.select("svg");
+    let digitSequence = "";
+    let userInput = "";
+    let difficultyLevel = 3;
+    let trial = 0;
+    let isBackward = false;
+    let logLines = [];
+    let sessionId = crypto.randomUUID();
+
+    const totalForwardTrials = 13;
+    const totalBackwardTrials = 11;
+
+    function showDigit(digit) {
+      svg.selectAll("text").remove();
+      svg.append("text")
+        .attr("x", 250)
+        .attr("y", 120)
+        .attr("font-size", "50px")
+        .attr("text-anchor", "middle")
+        .attr("opacity", 0)
+        .text(digit)
+        .transition()
+        .duration(500)
+        .attr("opacity", 1)
+        .transition()
+        .duration(500)
+        .attr("opacity", 0);
+    }
+
+    function generateRandomDigit() {
+      return Math.floor(Math.random() * 10).toString();
+    }
+
+    function generateSequence(length) {
+      let seq = "";
+      let prev = -1;
+      for (let i = 0; i < length; i++) {
+        let digit;
+        do {
+          digit = generateRandomDigit();
+        } while (digit === prev);
+        seq += digit;
+        prev = digit;
+      }
+      return seq;
+    }
+
+    function startTest() {
+      if (!isBackward && trial >= totalForwardTrials) {
+        isBackward = true;
+        document.getElementById("phase-indicator").textContent = "Baklängesdelen har börjat!";
+        difficultyLevel = 2;
+        trial = 0;
+        logLines.push("*END1");
+      }
+
+      if (isBackward && trial >= totalBackwardTrials) {
+        logLines.push("*END2");
+        showLog();
+        return;
+      }
+
+      digitSequence = generateSequence(difficultyLevel);
+      const digitsToShow = isBackward ? digitSequence.split("").reverse() : digitSequence.split("");
+
+      let index = 0;
+      function showNext() {
+        if (index < digitsToShow.length) {
+          showDigit(digitsToShow[index]);
+          index++;
+          setTimeout(showNext, 1500);
+        } else {
+          promptUserInput();
+        }
+      }
+
+      document.getElementById("difficulty-text").innerText = difficultyLevel;
+      showNext();
+    }
+
+    function promptUserInput() {
+      const container = document.getElementById("response-container");
+      container.innerHTML = "";
+
+      const input = document.createElement("input");
+      input.id = "input-field";
+      input.type = "text";
+      input.placeholder = "Ange siffrorna";
+      input.classList.add("form-control", "mx-auto");
+
+      const button = document.createElement("button");
+      button.classList.add("btn", "btn-secondary", "mt-2");
+      button.textContent = "Bekräfta svar";
+
+      button.addEventListener("click", () => {
+        userInput = input.value.trim();
+        container.innerHTML = "";
+        checkResponse();
+      });
+
+      container.appendChild(input);
+      container.appendChild(button);
+      input.focus();
+    }
+
+    async function checkResponse() {
+      const expected = isBackward ? digitSequence.split("").reverse().join("") : digitSequence;
+      const correct = userInput === expected;
+
+      logLines.push(digitSequence);
+      logLines.push(userInput);
+
+      await sendToSupabase({
+        session_id: sessionId,
+        phase: isBackward ? "backward" : "forward",
+        trial_number: trial + 1,
+        shown_sequence: digitSequence,
+        user_response: userInput,
+        correct: correct,
+        difficulty_level: difficultyLevel
+      });
+
+      if (correct) {
+        difficultyLevel += 1;
+      } else {
+        if (difficultyLevel > 2) difficultyLevel -= 1;
+      }
+
+      trial++;
+      setTimeout(startTest, 1000);
+    }
+
+    async function sendToSupabase(data) {
+      try {
+        const fullData = {
+          ...data,
+          test_label: window._testLabel,
+          tester_code: window._testerCode
+        };
+
+        const { error } = await window.supabase
+          .from("digitspan_results")
+          .insert([fullData]);
+
+        if (error) {
+          console.error("Supabase insert error:", error.message);
+        }
+      } catch (err) {
+        console.error("Fel vid insert:", err);
+      }
+    }
+
+    function showLog() {
+      const logDiv = document.getElementById("log-output");
+      logDiv.style.display = "block";
+      logDiv.textContent = logLines.join("\n");
+
+      const saveBtn = document.getElementById("save-btn");
+      saveBtn.style.display = "inline-block";
+
+      const restartBtn = document.getElementById("restart-btn");
+      restartBtn.style.display = "inline-block";
+    }
+
+    function saveLogAsFile() {
+      const blob = new Blob([logLines.join("\n")], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "digitspan_result.txt";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function resetTest() {
+      digitSequence = "";
+      userInput = "";
+      difficultyLevel = 3;
+      trial = 0;
+      isBackward = false;
+      logLines = [];
+      sessionId = crypto.randomUUID();
+
+      document.getElementById("difficulty-text").innerText = difficultyLevel;
+      document.getElementById("response-container").innerHTML = "";
+      document.getElementById("log-output").style.display = "none";
+      document.getElementById("log-output").textContent = "";
+      document.getElementById("save-btn").style.display = "none";
+      document.getElementById("restart-btn").style.display = "none";
+      document.getElementById("phase-indicator").textContent = "";
+  document.getElementById("start-btn").disabled = false;
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("start-btn").addEventListener("click", () => {
+        const testLabelEl = document.getElementById("test-label");
+        const testerCodeEl = document.getElementById("tester-code");
+
+        if (!testLabelEl || !testerCodeEl) {
+          console.error("Testetikett eller ID-kod saknas i DOM!");
+          return;
+        }
+
+        const testLabel = testLabelEl.value.trim();
+        const testerCode = testerCodeEl.value.trim();
+
+        if (testLabel === "" || testerCode === "") {
+          alert("Fyll i både testetikett och ID-kod innan du startar.");
+          return;
+        }
+
+        window._testLabel = testLabel;
+        window._testerCode = testerCode;
+
+        document.getElementById("start-btn").disabled = true;
+        document.getElementById("phase-indicator").textContent = "";
+        logLines = [];
+        isBackward = false;
+        difficultyLevel = 3;
+        trial = 0;
+        sessionId = crypto.randomUUID();
+        startTest();
+      });
+
+      document.getElementById("restart-btn").addEventListener("click", resetTest);
+    });
+  </script>
+</body>
+</html>
