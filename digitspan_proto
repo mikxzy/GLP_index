@@ -61,65 +61,11 @@
     <button id="restart-btn" class="btn btn-danger mt-3" style="display:none;">Starta om</button>
   </div>
 
-  <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-    const supabase = createClient(
-      "https://uwlowpscecrgqwnpnwqr.supabase.co",
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV3bG93cHNjZWNyZ3F3bnBud3FyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA3NzU3MTIsImV4cCI6MjA1NjM1MTcxMn0.OIH_NlcesgdFN78koNNUEtJap9qlwkJxmwhu4UUovNk"
-    
-    );
     
 
 
-    window.supabase = supabase;
-
-    const svg = d3.select("svg");
-    let digitSequence = "";
-    let userInput = "";
-    let difficultyLevel = 3;
-    let trial = 0;
-    let isBackward = false;
-    let logLines = [];
-    let sessionId = crypto.randomUUID();
-
-    const totalForwardTrials = 13;
-    const totalBackwardTrials = 11;
-
-    function showDigit(digit) {
-      svg.selectAll("text").remove();
-      svg.append("text")
-        .attr("x", 250)
-        .attr("y", 120)
-        .attr("font-size", "50px")
-        .attr("text-anchor", "middle")
-        .attr("opacity", 0)
-        .text(digit)
-        .transition()
-        .duration(500)
-        .attr("opacity", 1)
-        .transition()
-        .duration(500)
-        .attr("opacity", 0);
-    }
-
-    function generateRandomDigit() {
-      return Math.floor(Math.random() * 10).toString();
-    }
-
-    function generateSequence(length) {
-      let seq = "";
-      let prev = -1;
-      for (let i = 0; i < length; i++) {
-        let digit;
-        do {
-          digit = generateRandomDigit();
-        } while (digit === prev);
-        seq += digit;
-        prev = digit;
-      }
-      return seq;
-    }
+  
 
     function startTest() {
       if (!isBackward && trial >= totalForwardTrials) {
@@ -179,17 +125,7 @@
       input.focus();
     }
 
-    async function checkResponse() {
-  const payload = {
-    shown_sequence: digitSequence,
-    user_response: userInput,
-    direction: isBackward ? "backward" : "forward",
-    difficulty_level: difficultyLevel,
-    session_id: sessionId,
-    test_label: window._testLabel,
-    tester_code: window._testerCode,
-    trial_number: trial + 1
-  };
+    
 
   const res = await fetch("https://uwlowpscecrgqwnpnwqr.functions.supabase.co/evaluate-digitspan", {
   method: "POST",
